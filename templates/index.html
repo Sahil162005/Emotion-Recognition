@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion Predictor</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: #fff;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            color: #222;
+            margin-bottom: 20px;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            display: block;
+            margin: 15px auto;
+            padding: 10px;
+            font-size: 1rem;
+            color: #555;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #f9f9f9;
+            cursor: pointer;
+        }
+
+        button {
+            background: #007BFF;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .spinner {
+            display: none; /* Hidden by default */
+            margin: 20px auto;
+            border: 4px solid #f3f3f3; /* Light gray */
+            border-top: 4px solid #007BFF; /* Blue */
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #007BFF;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px 20px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            button {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Emotion Predictor</h1>
+        <form id="predictForm" action="/predict" method="post" enctype="multipart/form-data">
+            <input type="file" name="audio" accept=".wav" required>
+            <button type="submit" id="predictButton">Predict</button>
+        </form>
+        <!-- Spinner -->
+        <div class="spinner" id="spinner"></div>
+        <div id="result"></div>
+    </div>
+    <script>
+        const form = document.querySelector("#predictForm");
+        const spinner = document.getElementById("spinner");
+        const resultDiv = document.getElementById("result");
+        const predictButton = document.getElementById("predictButton");
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            // Show spinner and disable button
+            spinner.style.display = "block";
+            predictButton.disabled = true;
+
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch("/predict", {
+                    method: "POST",
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    resultDiv.innerText = result.emotion
+                        ? `Predicted Emotion: ${result.emotion}`
+                        : "Error in prediction.";
+                } else {
+                    resultDiv.innerText = "Failed to fetch prediction.";
+                }
+            } catch (error) {
+                resultDiv.innerText = "An error occurred while processing.";
+            } finally {
+                // Hide spinner and enable button
+                spinner.style.display = "none";
+                predictButton.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
