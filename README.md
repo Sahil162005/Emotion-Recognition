@@ -38,7 +38,8 @@ emotion-recognition/
 - **Modeling**: Scikit-learn / Keras
 - **Others**: NumPy, Pandas, Pickle
   ---
- ##🧠 Model Details
+  
+##🧠 Model Details
 The trained model uses MFCC features extracted from .wav files.
 
 Encoders (label_encoder.pkl and label2_encoder.pkl) are used to transform labels during prediction.
